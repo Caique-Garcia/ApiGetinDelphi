@@ -41,7 +41,7 @@ var
     Form1: TForm1;
 
 const
-   TOKEN : String = 'okpyOHC6eYTG4MIhzglsXQ';
+   TOKEN : String = 'token';
    URL   : String = 'https://api.cosmos.bluesoft.com.br';
 
 implementation
