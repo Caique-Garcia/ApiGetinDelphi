@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2023/09/11 10:00:22.000.705,=C:\Users\Caique\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/03/05 16:17:23.000.105,=C:\Users\Caique\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/04/26 08:44:18.000.977,=C:\Users\Caique\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/06/17 13:59:41.586,=C:\Users\Caique\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/06/17 14:01:33.754,C:\Users\Caique\Desktop\Trabalhando\Api Cosmos\View\GetGtin.View.Principal.fmx=C:\Users\Caique\Documents\Embarcadero\Studio\Projects\Unit1.fmx</Transaction>
+    <Transaction>2024/06/17 14:01:33.754,C:\Users\Caique\Desktop\Trabalhando\Api Cosmos\View\GetGtin.View.Principal.pas=C:\Users\Caique\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/06/17 14:01:47.193,C:\Users\Caique\Desktop\Trabalhando\Api Cosmos\GetGtin.dproj=C:\Users\Caique\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2024/06/17 15:36:05.903,C:\Users\Caique\Desktop\Trabalhando\Api Cosmos\GetInfoGtin.dproj=C:\Users\Caique\Desktop\Trabalhando\Api Cosmos\GetGtin.dproj</Transaction>
+  </Transactions>  <ActiveMobileDevice>   <NoProfile iOSSimulator="iPhone5"/>
+  </ActiveMobileDevice>
+</BorlandProject>
