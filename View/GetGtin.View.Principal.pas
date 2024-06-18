@@ -6,10 +6,11 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, IPPeerClient,
   REST.Client, Data.Bind.Components, Data.Bind.ObjectScope, FMX.Layouts,
-  FMX.Objects, FMX.Controls.Presentation, FMX.Edit, FMX.StdCtrls, System.JSON;
+  FMX.Objects, FMX.Controls.Presentation, FMX.Edit, FMX.StdCtrls, System.JSON, FMX.Clipboard,
+  FMX.ScrollBox, FMX.Platform, FMX.Memo, Winapi.Windows;
 
 type
-  TForm1 = class(TForm)
+  TFormPrincipal = class(TForm)
     RESTClient1: TRESTClient;
     RESTRequest1: TRESTRequest;
     RESTResponse1: TRESTResponse;
@@ -26,22 +27,33 @@ type
     Layout6: TLayout;
     Label3: TLabel;
     EditNCM: TEdit;
+    Layout7: TLayout;
+    Layout8: TLayout;
+    Rectangle3: TRectangle;
+    btnCopiar: TSpeedButton;
     EditDesc: TEdit;
+    Layout9: TLayout;
+    Label2: TLabel;
+    EditPreco: TEdit;
     procedure btnBuscarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure EditGetinKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
+    procedure FormDestroy(Sender: TObject);
+    procedure btnCopiarClick(Sender: TObject);
   private
+    Token : String;
+    FTextoResp: TStringList;
     procedure BuscaGtin(Cod: String);
+    procedure CopiarParaTransf(Texto: String);
   public
     { Public declarations }
   end;
 
 var
-    Form1: TForm1;
+    FormPrincipal: TFormPrincipal;
 
 const
-   TOKEN : String = 'token';
    URL   : String = 'https://api.cosmos.bluesoft.com.br';
 
 implementation
@@ -53,16 +65,40 @@ uses
 
 { TForm1 }
 
-procedure TForm1.btnBuscarClick(Sender: TObject);
+procedure TFormPrincipal.btnBuscarClick(Sender: TObject);
 begin
     if EditGetin.Text <> '' then BuscaGtin(EditGetin.Text);
 end;
 
-procedure TForm1.BuscaGtin(Cod: String);
+procedure TFormPrincipal.btnCopiarClick(Sender: TObject);
+begin
+    if FTextoResp.Text <> '' then
+        CopiarParaTransf(FTextoResp.Text);
+end;
+
+procedure TFormPrincipal.BuscaGtin(Cod: String);
 var
     LGtin: String;
     Resp : TJSONObject;
+    TokenTextFile: TextFile;
+    ExePath: string;
 begin
+
+    if Token.IsEmpty then
+    begin
+        ExePath := ExtractFilePath(ParamStr(0));
+
+        if not(InputQuery('Configuração do Token de acesso', 'Token', Token )) then exit;
+
+        AssignFile(TokenTextFile, ExePath + 'token.txt');
+        try
+          Rewrite(TokenTextFile);
+          WriteLn(TokenTextFile, Token);
+        finally
+          CloseFile(TokenTextFile);
+        end;
+    end;
+
     LGtin := '/gtins/' + trim(Cod);
 
     RESTClient1.BaseURL := URL + LGtin;
@@ -75,20 +111,63 @@ begin
 
     Resp  := RESTRequest1.Response.JSONValue as TJSONObject;
 
-    EditDesc.Text  := Resp.Values['description'].Value;
-    EditNCM.Text   := (Resp.Values['ncm'] as TJSONObject).Values['code'].Value;
+    try
+        EditDesc.Text  := Resp.Values['description'].Value;
+    except
+    end;
+
+    try
+        EditNCM.Text   := (Resp.Values['ncm'] as TJSONObject).Values['code'].Value;
+    except
+        EditNCM.Text   := '';
+    end;
+
+    try
+        EditPreco.Text := Resp.Values['price'].Value;
+    except
+    end;
+
+    FTextoResp.Clear;
+    FTextoResp.Add(RESTRequest1.Response.Content);
 end;
 
-procedure TForm1.EditGetinKeyDown(Sender: TObject; var Key: Word;
+procedure TFormPrincipal.CopiarParaTransf(Texto: String);
+var
+    Copy : IFMXClipboardService;
+begin
+
+   if TPlatformServices.Current.SupportsPlatformService(IFMXClipboardService, Copy) then
+      Copy.SetClipboard(Texto);
+end;
+
+procedure TFormPrincipal.EditGetinKeyDown(Sender: TObject; var Key: Word;
   var KeyChar: Char; Shift: TShiftState);
 begin
    if (EditGetin.Text <> '') and (Key = 13) then BuscaGtin(EditGetin.Text);
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TFormPrincipal.FormCreate(Sender: TObject);
+var
+  ExePath: string;
 begin
     EditDesc.Text  := '';
     EditNCM.Text   := '';
+    FTextoResp := TStringList.Create;
+
+    ExePath := ExtractFilePath(ParamStr(0));
+
+    try
+        FTextoResp.LoadFromFile(ExePath + 'token.txt');
+        Token := Trim(FTextoResp.Text);
+        FTextoResp.Clear;
+    except
+    end;
+
+end;
+
+procedure TFormPrincipal.FormDestroy(Sender: TObject);
+begin
+    FTextoResp.DisposeOf;
 end;
 
 end.
